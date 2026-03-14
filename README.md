@@ -1,8 +1,10 @@
 # chess-com-mcp
 
-An MCP (Model Context Protocol) server that provides access to the [Chess.com Published-Data API](https://www.chess.com/news/view/published-data-api). This gives LLMs the ability to look up player profiles, game history, stats, clubs, tournaments, puzzles, leaderboards, and more from Chess.com.
+An MCP (Model Context Protocol) server that provides access to the [Chess.com Published-Data API](https://www.chess.com/news/view/published-data-api) and the [Lichess API](https://lichess.org/api). This gives LLMs the ability to look up player profiles, game history, stats, clubs, tournaments, puzzles, leaderboards, and more from both platforms.
 
 ## Tools
+
+### Chess.com (28 tools)
 
 | Tool | Description |
 |------|-------------|
@@ -34,6 +36,35 @@ An MCP (Model Context Protocol) server that provides access to the [Chess.com Pu
 | `get_random_puzzle` | Get a random puzzle |
 | `get_streamers` | List Chess.com streamers |
 | `get_leaderboards` | Get leaderboards for all game types |
+
+### Lichess (24 tools)
+
+| Tool | Description |
+|------|-------------|
+| `lichess_get_user` | Get a user's profile, ratings across all variants, game counts, and bio |
+| `lichess_get_user_status` | Check if users are online, playing, or streaming (up to 100) |
+| `lichess_get_rating_history` | Get rating history across all variants with daily data points |
+| `lichess_get_perf_stats` | Get detailed performance stats: best wins, worst losses, streaks |
+| `lichess_get_user_activity` | Get recent activity: games, tournaments, practice, etc. |
+| `lichess_get_user_games` | Get recent games with optional filters (rated, variant, color) |
+| `lichess_get_game` | Get a specific game by its 8-character ID |
+| `lichess_get_current_game` | Get a user's current ongoing game or last played game |
+| `lichess_get_leaderboards` | Get top 10 players across all variants |
+| `lichess_get_leaderboard` | Get top N players for a specific variant/speed |
+| `lichess_get_daily_puzzle` | Get today's daily puzzle with solution and themes |
+| `lichess_get_puzzle` | Get a specific puzzle by ID |
+| `lichess_get_storm_dashboard` | Get a user's Puzzle Storm statistics |
+| `lichess_get_team` | Get a team's profile, description, and member count |
+| `lichess_search_teams` | Search for teams by name |
+| `lichess_get_user_teams` | Get all teams a user is a member of |
+| `lichess_get_current_tournaments` | Get the current tournament schedule |
+| `lichess_get_tournament` | Get details about a specific arena tournament |
+| `lichess_get_user_tournaments` | Get tournaments a user has played in |
+| `lichess_get_tv_channels` | Get the featured game on each TV channel |
+| `lichess_get_tv_games` | Get best ongoing games from a specific TV channel |
+| `lichess_get_streamers` | Get currently live streamers on Twitch and YouTube |
+| `lichess_get_crosstable` | Get head-to-head record between two users |
+| `lichess_get_cloud_eval` | Get cloud engine evaluation for a FEN position |
 
 ## Setup
 
@@ -115,19 +146,30 @@ claude mcp add chess-com docker run --rm -i chess-com-mcp:latest
 
 Once configured, you can ask your LLM things like:
 
+**Chess.com:**
 - "What is Hikaru's Chess.com rating?"
-- "Show me Magnus Carlsen's recent blitz games"
+- "Show me Magnus Carlsen's recent blitz games on Chess.com"
 - "Who are the top players on the Chess.com leaderboard?"
-- "Get today's daily puzzle"
-- "Is GothamChess online right now?"
+- "Get today's Chess.com daily puzzle"
 - "List all Grandmasters on Chess.com"
-- "Show me the stats for player erik"
+
+**Lichess:**
+- "Show me DrNykterstein's Lichess profile"
+- "What's the head-to-head record between DrNykterstein and Firouzja2003 on Lichess?"
+- "Get the Lichess daily puzzle"
+- "Who are the top bullet players on Lichess?"
+- "What games are currently featured on Lichess TV?"
+- "Get the cloud evaluation for this position: rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1"
+
+**Cross-platform:**
+- "Compare Hikaru's ratings on Chess.com and Lichess"
+- "Get today's daily puzzle from both Chess.com and Lichess"
 
 ## Notes
 
-- The Chess.com API is read-only and free to use. No API key is required.
-- Rate limiting applies to parallel requests. The server makes serial requests so this should not be an issue under normal use.
-- Data may be cached on Chess.com's side for up to 12-24 hours.
+- Both APIs are read-only and free to use. No API keys are required.
+- **Chess.com**: Rate limiting applies to parallel requests. Data may be cached for up to 12-24 hours.
+- **Lichess**: Requests are serial (one at a time). A 429 response means you should wait ~1 minute. Game exports stream as NDJSON.
 
 ## License
 
